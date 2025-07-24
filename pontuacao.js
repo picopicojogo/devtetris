@@ -5,7 +5,7 @@ let comboAtivo  = false;
 let totalCombos = 0;
 
 /**
- * Processa as linhas eliminadas e atualiza pontuação, nível e combos.
+ * Processa as linhas eliminadas e actualiza a pontuação, nível e combos.
  */
 export function processarLinhas(linhasFeitas) {
   let pontosGanhos = 0;
@@ -13,13 +13,13 @@ export function processarLinhas(linhasFeitas) {
   if (linhasFeitas >= 1) {
     pontosGanhos = linhasFeitas * 100;
 
-    // Frases de celebração por número de linhas (PT-PT)
+    // Frases de celebração por número de linhas
     const celebracoes = {
       1: [
         "Linha limpa! 🧼",
         "Está a começar a festa! 🎉",
         "Uma riscada com estilo! ✏️",
-        "Brinco de jogada. 💎"
+        "Joaga de diamante. 💎"
       ],
       2: [
         "Dupla eliminada! 🔥",
@@ -212,3 +212,6 @@ export function injectarEstilosRankingPontuacao() {
   `;
   document.head.appendChild(estilos);
 }
+
+// Exporta a variável nível para outros módulos
+export { nivel };
