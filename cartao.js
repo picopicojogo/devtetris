@@ -30,6 +30,24 @@ function injectarEstilosCartao() {
       font-size: clamp(10px, 2.5vw, 14px);
     }
 
+    .cartao-holografico {
+      background: linear-gradient(135deg, #00ffff 0%, #ff00ff 100%);
+      background-size: 200% 200%;
+      animation: brilho-holografico 3s ease infinite;
+      box-shadow: 0 0 24px rgba(255,255,255,0.4);
+    }
+
+    @keyframes brilho-holografico {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .forca-estilo-holografico {
+      animation: none !important;
+      background-position: 75% 50% !important;
+    }
+
     .cartao-topo {
       font-size: 0.8em;
       margin-bottom: 0.6em;
@@ -143,6 +161,12 @@ export function gerarCartaoJogadorDados(jogador) {
     classes.push("cartao-combo");
   }
 
+  // Efeito holográfico para nível lendário
+  const tituloCartao = jogador.nivel >= 20 ? "🏅 Cartão Lendário" : "Pico-Pico Bricks";
+  if (jogador.nivel >= 20) {
+    classes.push("cartao-holografico");
+  }
+
   const emojiTopo = ["🕹️", "👾", "🎯", "🔥", "🚀", "⚡"][Math.floor(Math.random() * 6)];
   const nomeFormatado = formatarNome(jogador.nome);
   const tamanhoNome = "1.2em";
@@ -158,28 +182,38 @@ export function gerarCartaoJogadorDados(jogador) {
         <div>Data: <strong>${jogador.data || "--/--/----"}</strong></div>
         <div>Tempo: <strong>${jogador.tempo || "--:--"}</strong></div>
       </div>
-      <div class="cartao-titulo-fundo">Pico-Pico Bricks</div>
+      <div class="cartao-titulo-fundo">${tituloCartao}</div>
     </div>
   `;
 
   document.getElementById("cartaoModal")?.classList.add("show");
 
   const botaoExportar = document.getElementById("exportarCartaoBtn");
-  if (botaoExportar) botaoExportar.onclick = exportarCartaoComoImagem;
+  if (botaoExportar) botaoExportar.onclick = () => exportarCartaoComoImagem(jogador.nivel);
 }
 
 /**
  * Exporta o cartão como imagem PNG com recurso à biblioteca html2canvas
  */
-export function exportarCartaoComoImagem() {
+export function exportarCartaoComoImagem(nivelJogador) {
   const alvo = document.getElementById("cartaoGerado");
   if (!alvo) return;
+
+  // Aplica estilo temporário para capturar efeito holográfico corretamente
+  if (nivelJogador >= 20) {
+    alvo.classList.add("forca-estilo-holografico");
+  }
 
   html2canvas(alvo, {
     backgroundColor: "#111",
     scale: 2,
     useCORS: true
   }).then(canvas => {
+    // Remove classe forçada após captura
+    if (nivelJogador >= 20) {
+      alvo.classList.remove("forca-estilo-holografico");
+    }
+
     const imagem = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = imagem;
@@ -187,5 +221,8 @@ export function exportarCartaoComoImagem() {
     link.click();
   }).catch(() => {
     alert("Erro ao exportar cartão. Tenta novamente.");
+    if (nivelJogador >= 20) {
+      alvo.classList.remove("forca-estilo-holografico");
+    }
   });
 }
