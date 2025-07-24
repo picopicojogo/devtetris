@@ -19,7 +19,7 @@ export function processarLinhas(linhasFeitas) {
         "Linha limpa! 🧼",
         "Está a começar a festa! 🎉",
         "Uma riscada com estilo! ✏️",
-        "Joaga de diamante. 💎"
+        "Jogada de diamante. 💎"
       ],
       2: [
         "Dupla eliminada! 🔥",
@@ -52,6 +52,10 @@ export function processarLinhas(linhasFeitas) {
     pontuacao = Math.min(pontuacao, 999999); // 🔒 Limite máximo
     nivel = 1 + Math.floor(pontuacao / 500);
     atualizarPontuacao(pontuacao, nivel);
+
+    // Mensagem especial ao atingir níveis importantes
+    if (nivel === 10) mostrarCelebracao("🎯 Desbloqueaste peças avançadas!");
+    if (nivel === 20) mostrarCelebracao("🏅 Chegaste ao nível lendário!");
   } else {
     comboAtivo = false;
   }
@@ -190,15 +194,15 @@ export function injectarEstilosRankingPontuacao() {
   const estilos = document.createElement("style");
   estilos.id = "estilos-ranking-pontuacao";
   estilos.textContent = `
-    .medalha-ouro       { color: #FFD700; font-weight: bold; text-shadow: 0 0 4px #FFF176; }
-    .medalha-prata      { color: #C0C0C0; font-weight: bold; text-shadow: 0 0 3px #CFD8DC; }
-    .medalha-bronze     { color: #CD7F32; font-weight: bold; text-shadow: 0 0 3px #D7CCC8; }
-    .medalha-participacao { color: #999; opacity: 0.8; }
+    .medalha-ouro          { color: #FFD700; font-weight: bold; text-shadow: 0 0 4px #FFF176; }
+    .medalha-prata         { color: #C0C0C0; font-weight: bold; text-shadow: 0 0 3px #CFD8DC; }
+    .medalha-bronze        { color: #CD7F32; font-weight: bold; text-shadow: 0 0 3px #D7CCC8; }
+    .medalha-participacao  { color: #999; opacity: 0.8; }
 
-    .destaque-estratega  { background-color: #1c1c3c; border-left: 4px solid #00ffff; }
-    .destaque-rapido     { background-color: #1c3c1c; border-left: 4px solid #00ff99; }
-    .destaque-relampago  { background-color: #3c1c1c; border-left: 4px solid #ff4444; }
-    .destaque-resistente { background-color: #2a2a2a; border-left: 4px solid #cccccc; }
+    .destaque-estratega    { background-color: #1c1c3c; border-left: 4px solid #00ffff; }
+    .destaque-rapido       { background-color: #1c3c1c; border-left: 4px solid #00ff99; }
+    .destaque-relampago    { background-color: #3c1c1c; border-left: 4px solid #ff4444; }
+    .destaque-resistente   { background-color: #2a2a2a; border-left: 4px solid #cccccc; }
 
     ul#top10List li {
       padding: 0.4em;
@@ -213,5 +217,5 @@ export function injectarEstilosRankingPontuacao() {
   document.head.appendChild(estilos);
 }
 
-// Exporta a variável nível para outros módulos
+// Exporta o nível atual para outros módulos
 export { nivel };
