@@ -1,4 +1,4 @@
-// Importação dos módulos necessários
+// === Importação dos módulos principais ===
 import {
   COLUNAS, LINHAS,
   criarMatriz, verificarColisao,
@@ -29,7 +29,7 @@ import {
   guardarPontuacao,
   obterRankingOrdenado,
   injectarEstilosRankingPontuacao,
-  nivel // Utilizado para velocidade e seleção de peças
+  nivel
 } from './pontuacao.js';
 
 import {
@@ -46,7 +46,7 @@ import {
   gerarCartaoJogadorDados
 } from './cartao.js';
 
-// Inicialização de estilos e funcionalidades auxiliares
+// === Inicialização de estilos e partilhas ===
 injectarEstilosRankingPontuacao();
 configurarPartilhasPerfil();
 configurarPartilhasPerfilFlexivel();
@@ -55,10 +55,8 @@ configurarPartilhaLinkCurto();
 configurarPartilhaEmailPerfil();
 configurarPartilhaImagemCartao();
 
-// Configuração dos canvas principais
+// === Configuração dos canvas e estado inicial do jogo ===
 const { ctxBoard, ctxNext } = configurarCanvas();
-
-// Estado inicial do jogo
 let tabuleiro   = criarMatriz(COLUNAS, LINHAS);
 let pecaAtual   = gerarPeca(nivel);
 let proximaPeca = gerarPeca(nivel);
@@ -69,7 +67,7 @@ let tempoIntervalo = null;
 let segundos       = 0;
 
 /**
- * Atualiza o estado do jogo em cada ciclo
+ * Função principal de actualização do jogo a cada ciclo
  */
 function atualizar() {
   posicao.y++;
@@ -79,18 +77,28 @@ function atualizar() {
     fundirPeca(tabuleiro, pecaAtual, posicao);
     tocarSomColidir();
 
+    // Verifica se foi feita alguma linha e processa a pontuação
     const linhasFeitas = limparLinhas(tabuleiro);
     const { pontuacao } = processarLinhas(linhasFeitas);
 
-    const canvasTabuleiro = document.querySelector("canvas#board");
-    if (linhasFeitas > 1 && canvasTabuleiro) {
-      canvasTabuleiro.classList.add("combo-ativo");
-      setTimeout(() => canvasTabuleiro.classList.remove("combo-ativo"), 600);
+    // Efeito visual de combo activado
+    if (linhasFeitas > 1) {
+      document.querySelector("canvas#board")?.classList.add("combo-ativo");
+      setTimeout(() => {
+        document.querySelector("canvas#board")?.classList.remove("combo-ativo");
+      }, 600);
     }
 
+    // Troca a peça actual pela próxima e gera uma nova peça
     [pecaAtual, proximaPeca] = [proximaPeca, gerarPeca(nivel)];
     posicao = { x: Math.floor(COLUNAS / 2) - 1, y: 0 };
 
+    // 🎉 Celebração especial se for uma peça lendária
+    if (nivel >= 20 && pecaAtual.flat().some(v => [11,12,13,14].includes(v))) {
+      mostrarCelebracao("💎 Peça lendária recebida!");
+    }
+
+    // Verifica se perdeu após nova geração
     if (verificarColisao(tabuleiro, pecaAtual, posicao)) {
       tocarSomPerdeu();
       clearInterval(intervalo);
@@ -104,7 +112,7 @@ function atualizar() {
 }
 
 /**
- * Atualiza o desenho dos canvas
+ * Redesenha o estado do jogo no canvas
  */
 function desenhar() {
   desenharJogo(ctxBoard, ctxBoard.canvas.width, ctxBoard.canvas.height, tabuleiro, pecaAtual, posicao);
@@ -112,7 +120,7 @@ function desenhar() {
 }
 
 /**
- * Faz a peça descer instantaneamente até travar
+ * Faz a peça cair instantaneamente até travar
  */
 function quedaInstantanea() {
   while (!verificarColisao(tabuleiro, pecaAtual, { x: posicao.x, y: posicao.y + 1 })) {
@@ -122,7 +130,7 @@ function quedaInstantanea() {
 }
 
 /**
- * Pausa o jogo
+ * Pausa o jogo e interrompe a música
  */
 function pausarJogo() {
   clearInterval(intervalo);
@@ -143,7 +151,7 @@ function iniciarTempo() {
 }
 
 /**
- * Mostra uma mensagem visual breve
+ * Mostra uma mensagem breve no fundo do ecrã
  */
 function mostrarMensagem(texto) {
   const msg = document.getElementById("mensagemConforto");
@@ -153,14 +161,12 @@ function mostrarMensagem(texto) {
   msg.style.opacity = "1";
   setTimeout(() => {
     msg.style.opacity = "0";
-    setTimeout(() => {
-      msg.style.display = "none";
-    }, 1000);
+    setTimeout(() => msg.style.display = "none", 1000);
   }, 4000);
 }
 
 /**
- * Atualiza estatísticas no modal respetivo
+ * Atualiza estatísticas no modal de jogador
  */
 function atualizarEstatisticasModal() {
   const lista = document.getElementById("estatisticasList");
@@ -187,13 +193,13 @@ function atualizarEstatisticasModal() {
 }
 
 /**
- * Aplica modo conforto automático com base na hora ou preferências guardadas
+ * Aplica automaticamente o modo conforto com base na hora ou preferências
  */
 function aplicarModoAutomatico() {
-  const localPref = localStorage.getItem("modoConfortoAtivado");
+  const pref = localStorage.getItem("modoConfortoAtivado");
   const hora = new Date().getHours();
   const estaNoite = hora >= 20 || hora <= 6;
-  const ativar = (estaNoite && localPref !== "false") || localPref === "true";
+  const ativar = (estaNoite && pref !== "false") || pref === "true";
 
   if (ativar) {
     document.body.classList.add("modo-seguro");
@@ -204,7 +210,7 @@ function aplicarModoAutomatico() {
 }
 
 /**
- * Ajusta elementos visuais conforme a resolução do dispositivo
+ * Ajusta o layout visual conforme a resolução do dispositivo
  */
 function adaptarLayoutPorResolucao() {
   const altura = window.innerHeight;
@@ -224,7 +230,7 @@ function adaptarLayoutPorResolucao() {
   }
 }
 
-// Configuração dos controlos principais
+// === Configuração dos controlos principais ===
 configurarControlos(
   dir => moverPeca(dir, tabuleiro, pecaAtual, posicao),
   sentido => {
@@ -242,7 +248,7 @@ configurarControlos(
   pausarJogo
 );
 
-// Referência aos botões da interface
+// === Ligações a botões da interface ===
 const btns = {
   start: document.getElementById("startBtn"),
   pause: document.getElementById("pauseBtn"),
@@ -253,15 +259,17 @@ const btns = {
   top10: document.getElementById("top10Btn"),
   fecharTop10: document.getElementById("fecharTop10"),
   estatisticas: document.getElementById("estatisticasBtn"),
-  fecharEstatisticas: document.getElementById("fecharEstatisticas"),
+    fecharEstatisticas: document.getElementById("fecharEstatisticas"),
   partilhar: document.getElementById("partilharResultado"),
   cartao: document.getElementById("gerarCartaoJogador"),
-    modoSeguro: document.getElementById("modoSeguroBtn"),
+  modoSeguro: document.getElementById("modoSeguroBtn"),
   resetPrefs: document.getElementById("resetPreferenciasBtn"),
   alternarEfeitos: document.getElementById("alternarEfeitosBtn")
 };
 
-// Ação ao iniciar o jogo — velocidade ajustada ao nível
+// === Configuração dos botões da interface ===
+
+// Iniciar jogo com velocidade adaptada ao nível
 if (btns.start) {
   btns.start.addEventListener("click", () => {
     if (!intervalo) {
@@ -273,168 +281,135 @@ if (btns.start) {
   });
 }
 
-// Pausa do jogo
-if (btns.pause) {
-  btns.pause.addEventListener("click", pausarJogo);
-}
+// Pausar o jogo
+btns.pause?.addEventListener("click", pausarJogo);
 
-// Reinício total do jogo
-if (btns.reset) {
-  btns.reset.addEventListener("click", () => {
-    pausarJogo();
-    tabuleiro = criarMatriz(COLUNAS, LINHAS);
-    [pecaAtual, proximaPeca] = [gerarPeca(nivel), gerarPeca(nivel)];
-    posicao = { x: Math.floor(COLUNAS / 2) - 1, y: 0 };
-    segundos = 0;
-    reiniciarPontuacao();
-    atualizarTempo(segundos);
-    desenhar();
-  });
-}
+// Reiniciar jogo completo
+btns.reset?.addEventListener("click", () => {
+  pausarJogo();
+  tabuleiro = criarMatriz(COLUNAS, LINHAS);
+  [pecaAtual, proximaPeca] = [gerarPeca(nivel), gerarPeca(nivel)];
+  posicao = { x: Math.floor(COLUNAS / 2) - 1, y: 0 };
+  segundos = 0;
+  reiniciarPontuacao();
+  atualizarTempo(segundos);
+  desenhar();
+});
 
-// Alternar música de fundo
-if (btns.toggleSound) {
-  btns.toggleSound.addEventListener("click", alternarMusica);
-}
+// Alternar música ambiente
+btns.toggleSound?.addEventListener("click", alternarMusica);
 
-// Guardar pontuação
-if (btns.confirmSave) {
-  btns.confirmSave.addEventListener("click", () => {
-    const pontos = parseInt(document.getElementById("score")?.textContent || "0", 10);
-    guardarPontuacao(pontos);
-  });
-}
+// Guardar pontuação final
+btns.confirmSave?.addEventListener("click", () => {
+  const pontos = parseInt(document.getElementById("score")?.textContent || "0", 10);
+  guardarPontuacao(pontos);
+});
 
-// Cancelar modal de guardar
-if (btns.cancelSave) {
-  btns.cancelSave.addEventListener("click", () => {
-    const modal = document.getElementById("modal");
-    if (modal) modal.classList.remove("show");
-  });
-}
+// Fechar modal de guardar
+btns.cancelSave?.addEventListener("click", () => {
+  document.getElementById("modal")?.classList.remove("show");
+});
 
 // Mostrar ranking Top 10
-if (btns.top10) {
-  btns.top10.addEventListener("click", () => {
-    const modal = document.getElementById("top10Modal");
-    const lista = document.getElementById("top10List");
-    const ranking = obterRankingOrdenado();
-    const nomeAtual = document.getElementById("player-name")?.value.trim();
+btns.top10?.addEventListener("click", () => {
+  const modal = document.getElementById("top10Modal");
+  const lista = document.getElementById("top10List");
+  const ranking = obterRankingOrdenado();
+  const nomeAtual = document.getElementById("player-name")?.value.trim();
 
-    if (lista) {
-      lista.innerHTML = ranking.map((jogador, i) => {
-        const medalhaClass  = `medalha-${jogador.medalha}`;
-        const destaqueClass = `destaque-${jogador.destaque}`;
-        const ehAtual       = nomeAtual && nomeAtual === jogador.nome;
-        const classeExtra   = ehAtual ? "jogador-actual" : "";
+  if (lista) {
+    lista.innerHTML = ranking.map((jogador, i) => {
+      const medalhaClass  = `medalha-${jogador.medalha}`;
+      const destaqueClass = `destaque-${jogador.destaque}`;
+      const ehAtual       = nomeAtual && nomeAtual === jogador.nome;
+      const classeExtra   = ehAtual ? "jogador-actual" : "";
 
-        return `<li class="${medalhaClass} ${destaqueClass} ${classeExtra}" title="🌟 ${jogador.data}">
-          ${i + 1}. ${jogador.nome} — ${jogador.pontos} pts
-        </li>`;
-      }).join("");
-    }
+      return `<li class="${medalhaClass} ${destaqueClass} ${classeExtra}" title="🌟 ${jogador.data}">
+        ${i + 1}. ${jogador.nome} — ${jogador.pontos} pts
+      </li>`;
+    }).join("");
+  }
 
-    if (modal) modal.classList.add("show");
-  });
-}
+  modal?.classList.add("show");
+});
 
 // Fechar modal Top 10
-if (btns.fecharTop10) {
-  btns.fecharTop10.addEventListener("click", () => {
-    const modal = document.getElementById("top10Modal");
-    if (modal) modal.classList.remove("show");
-  });
-}
+btns.fecharTop10?.addEventListener("click", () => {
+  document.getElementById("top10Modal")?.classList.remove("show");
+});
 
-// Mostrar estatísticas
-if (btns.estatisticas) {
-  btns.estatisticas.addEventListener("click", () => {
-    atualizarEstatisticasModal();
-    const modal = document.getElementById("estatisticasModal");
-    if (modal) modal.classList.add("show");
-  });
-}
+// Mostrar estatísticas do jogador
+btns.estatisticas?.addEventListener("click", () => {
+  atualizarEstatisticasModal();
+  document.getElementById("estatisticasModal")?.classList.add("show");
+});
 
 // Fechar estatísticas
-if (btns.fecharEstatisticas) {
-  btns.fecharEstatisticas.addEventListener("click", () => {
-    const modal = document.getElementById("estatisticasModal");
-    if (modal) modal.classList.remove("show");
+btns.fecharEstatisticas?.addEventListener("click", () => {
+  document.getElementById("estatisticasModal")?.classList.remove("show");
+});
+
+// Partilhar resultado final por rede, link ou email
+btns.partilhar?.addEventListener("click", partilharResultadoFinal);
+
+// Gerar cartão visual do jogador
+btns.cartao?.addEventListener("click", () => {
+  const nome   = document.getElementById("player-name")?.value.trim() || "Jogador Anónimo";
+  const pontos = parseInt(document.getElementById("score")?.textContent || "0", 10);
+  const nivelAtual = parseInt(document.getElementById("level")?.textContent || "1", 10);
+  const tempo  = document.getElementById("time")?.textContent || "00:00";
+  const ranking = obterRankingOrdenado();
+  const jogadorSalvo = ranking.find(j => j.nome === nome);
+  const combos = jogadorSalvo?.combos || 0;
+
+  const data = new Date().toLocaleDateString("pt-PT", {
+    day: "2-digit", month: "2-digit", year: "numeric"
   });
-}
 
-// Partilhar resultado final
-if (btns.partilhar) {
-  btns.partilhar.addEventListener("click", partilharResultadoFinal);
-}
+  const jogador = { nome, pontos, nivel: nivelAtual, data, combos, tempo };
+  gerarCartaoJogadorDados(jogador);
+});
 
-// Gerar cartão do jogador
-if (btns.cartao) {
-  btns.cartao.addEventListener("click", () => {
-    const nome   = document.getElementById("player-name")?.value.trim() || "Jogador Anónimo";
-    const pontos = parseInt(document.getElementById("score")?.textContent || "0", 10);
-    const nivelAtual  = parseInt(document.getElementById("level")?.textContent || "1", 10);
-    const tempo  = document.getElementById("time")?.textContent || "00:00";
-    const ranking = obterRankingOrdenado();
-    const jogadorSalvo = ranking.find(j => j.nome === nome);
-    const combos = jogadorSalvo?.combos || 0;
+// Alternar manualmente modo conforto (retro)
+btns.modoSeguro?.addEventListener("click", () => {
+  const corpo = document.body;
+  const ativar = !corpo.classList.contains("modo-seguro");
+  corpo.classList.toggle("modo-seguro");
+  localStorage.setItem("modoConfortoAtivado", ativar ? "true" : "false");
 
-    const agora = new Date();
-    const data = agora.toLocaleDateString("pt-PT", {
-      day: "2-digit", month: "2-digit", year: "numeric"
+  mostrarMensagem(ativar
+    ? "Modo conforto activado."
+    : "Modo conforto desactivado.");
+});
+
+// Reiniciar preferências guardadas e ranking
+btns.resetPrefs?.addEventListener("click", () => {
+  if (confirm("Queres mesmo apagar todas as pontuações e definições guardadas?")) {
+    ["modoConfortoAtivado", "rankingTop10", "jogadorRecente"].forEach(chave => {
+      localStorage.removeItem(chave);
     });
-
-    const jogador = { nome, pontos, nivel: nivelAtual, data, combos, tempo };
-    gerarCartaoJogadorDados(jogador);
-  });
-}
-
-// Alternar manualmente o modo conforto
-if (btns.modoSeguro) {
-  btns.modoSeguro.addEventListener("click", () => {
-    const corpo = document.body;
-    const ativar = !corpo.classList.contains("modo-seguro");
-    corpo.classList.toggle("modo-seguro");
-    localStorage.setItem("modoConfortoAtivado", ativar ? "true" : "false");
-
-    mostrarMensagem(ativar
-      ? "Modo conforto activado."
-      : "Modo conforto desactivado.");
-  });
-}
-
-// Reiniciar preferências e ranking
-if (btns.resetPrefs) {
-  btns.resetPrefs.addEventListener("click", () => {
-    if (confirm("Queres mesmo apagar todas as pontuações e definições guardadas?")) {
-      ["modoConfortoAtivado", "rankingTop10", "jogadorRecente"].forEach(chave => {
-        localStorage.removeItem(chave);
-      });
-      document.body.classList.remove("modo-seguro");
-      mostrarMensagem("Preferências apagadas.");
-      setTimeout(() => location.reload(), 4000);
-    }
-  });
-}
+    document.body.classList.remove("modo-seguro");
+    mostrarMensagem("Preferências apagadas.");
+    setTimeout(() => location.reload(), 4000);
+  }
+});
 
 // Alternar efeitos sonoros
-if (btns.alternarEfeitos) {
-  btns.alternarEfeitos.addEventListener("click", () => {
-    const silenciado = btns.alternarEfeitos.classList.contains("silenciado");
+btns.alternarEfeitos?.addEventListener("click", () => {
+  const silenciado = btns.alternarEfeitos.classList.contains("silenciado");
 
-    alternarEfeitos();
-    btns.alternarEfeitos.classList.toggle("silenciado");
-    btns.alternarEfeitos.textContent = silenciado
-      ? "🔔 Efeitos Activos"
-      : "🔕 Efeitos Silenciados";
+  alternarEfeitos();
+  btns.alternarEfeitos.classList.toggle("silenciado");
+  btns.alternarEfeitos.textContent = silenciado
+    ? "🔔 Efeitos Activos"
+    : "🔕 Efeitos Silenciados";
 
-    mostrarMensagem(silenciado
-      ? "Efeitos sonoros activados."
-      : "Efeitos sonoros silenciados.");
-  });
-}
+  mostrarMensagem(silenciado
+    ? "Efeitos sonoros activados."
+    : "Efeitos sonoros silenciados.");
+});
 
-// Inicialização visual ao carregar a página
+// === Inicialização visual ao carregar a página ===
 atualizarTempo(segundos);
 aplicarModoAutomatico();
 adaptarLayoutPorResolucao();
