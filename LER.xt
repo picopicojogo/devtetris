@@ -1,57 +1,75 @@
-/* === Por ordem de prioridade funcional, desde o arranque e núcleo do jogo até à interface, extras e ferramentas de apoio. === */
+/* === Ficheiros principais por ordem funcional: do núcleo à interface, extras e integração === */
 Nome do Ficheiro            Função Principal
-──────────────────────────  ───────────────────────────────────────────────────────────────────────────────────────
-loader.js                   Arranque inicial: pré-carregamento de recursos, frases arcade e activação do botão Iniciar
-motor.js                    Núcleo lógico: definição das peças, colisões, rotação, matriz do tabuleiro e progressão
-canvas.js                   Renderização: desenho da peça activa e próxima, e actualização visual de tempo e pontuação
+──────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────────────
+motor.js                    Núcleo lógico: definição das peças por nível, colisões, rotação, matriz do tabuleiro e progressão
+canvas.js                   Renderização: desenho do tabuleiro, peça activa e próxima, e actualização visual de pontuação e tempo
 controlos.js                Entrada do jogador: teclado físico, gestos tácteis, vibração e alternância táctil arcade
-pontuacao.js                Sistema de pontuação: cálculo de linhas, combos, níveis, ranking e mensagens de celebração
-audio.js                    Ambiente sonoro: efeitos, música retro, vibração e modo conforto auditivo
-cerebro.js                  Lógica central: ciclo do jogo, integração dos módulos, desbloqueios e coordenação visual
-index.html                  Estrutura da interface: canvases, botões, modais, ranking, áudio, partilhas e ligações aos scripts
-style.css                   Estilo visual retro: layout arcade, animações, tipografia pixelizada e efeitos interactivos
-responsive.css              Adaptação de interface: escalonamento por dispositivos, modo retrato e estilo táctil
-cartao.js                   Cartão do jogador: criação de perfil pixelado, estilos visuais retro e exportação como imagem
-partilhas.js                Partilha de resultados: redes sociais, link curto, clipboard, imagem, e-mail e integração com perfil
-estatisticas.js             Estatísticas globais: análise dos 10 melhores, cálculos médios, exportações (.txt/.csv) e personalização
-avisosdebug.js              Diagnóstico técnico: validação de elementos DOM, recursos, estilos e suporte a APIs no modo desenvolvimento
+pontuacao.js                Sistema de pontuação: cálculo de linhas, combos, níveis, limite, ranking local e mensagens de celebração
+audio.js                    Ambiente sonoro: música retro, efeitos arcade, vibração e modo conforto auditivo
+cartao.js                   Cartão do jogador: criação pixelada por mérito, fundo holográfico, título lendário e exportação como imagem
+partilhas.js                Partilha de resultados: redes sociais, clipboard, link curto, imagem gerada, e-mail e perfil
+cerebro.js                  Lógica central: ciclo do jogo, velocidade por nível, geração de peças variáveis e integração dos módulos
+index.html                  Estrutura da interface: canvases, botões, modais, cartões, áudio, partilhas e ligação entre ficheiros
+style.css                   Estilo retro visual: layout arcade, animações, tipografia pixelizada, efeitos dinâmicos e fundo holográfico
+responsive.css              Adaptação de interface: escalonamento automático, modo retrato, acessibilidade móvel e optimização por ecrã
 
 /* === Sistema de Pontuação === */
-Cada linha eliminada vale 100 pontos
-Múltiplas linhas numa jogada criam mensagens temáticas:
-  2 linhas → “Dupla eliminada!” ou combo especial
-  4 linhas → “Tetris máximo! És um mestre!”
-  6 linhas → “Ultra explosão!”
+→ Cada linha eliminada vale 100 pontos
 
-Combos consecutivos são acumulados e aumentam o destaque.
-O nível sobe a cada 500 pontos: nível = 1 + Math.floor(pontuação / 500)
-Limite máximo de pontuação: 999.999 pontos
+→ Combos consecutivos são acumulados e aumentam o mérito do jogador
 
-/* === Sistema de Pontuação === */
-O ranking é guardado localmente (localStorage)
-Cada entrada inclui: nome, pontuação, nível, tempo, número de combos, data.
-Medalhas atribuídas consoante os pontos:
-  Ouro → ≥ 3000
-  Prata → ≥ 2000
-  Bronze → ≥ 1000
-  Participação → < 1000
+→ Fórmula de progressão de nível:
+   nível = 1 + Math.floor(pontuação / 500)
 
-Destaques por estilo de jogo:
-  Estratégia → ≥ 12 combos
-  Rápido → ≥ 6 combos
-  Relâmpago → tempo ≤ 01:00
-  Resistente → restante
+→ Limite máximo de pontuação:
+   999.999 pontos
 
-/* === Controlo por Teclado === */
+→ As peças evoluem visualmente e mecanicamente a partir do nível 10 e 20
 
-Tecla	Acção:
+/* === Ranking Local (Top 10) === */
+→ Guardado no navegador via localStorage com chave `rankingTop10`
+
+→ Cada entrada inclui:
+   - Nome do jogador
+   - Pontuação final
+   - Nível atingido
+   - Tempo decorrido (MM:SS)
+   - Número total de combos
+   - Data da sessão (dd/mm/aaaa)
+
+→ Medalhas atribuídas por pontuação:
+   • Ouro       → ≥ 3000 pontos
+   • Prata      → ≥ 2000 pontos
+   • Bronze     → ≥ 1000 pontos
+   • Participação → < 1000
+
+→ Destaques visuais por estilo de jogo:
+   • Estratégia → ≥ 12 combos
+   • Rápido     → ≥ 6 combos
+   • Relâmpago  → tempo ≤ 01:00
+   • Resistente → restante
+
+/* === Cartão do Jogador === */
+→ Criado dinamicamente com fundo temático e méritos visuais
+→ Estilos por pontuação: Novato, Pixel, Neon, Ouro, Combo
+→ Modo conforto adapta o estilo visual para ambientes escuros
+→ Jogador com nível ≥ 20:
+   - Recebe fundo com efeito holográfico animado
+   - Título do cartão muda para “🏅 Cartão Lendário”
+→ Cartão pode ser exportado como imagem PNG
+→ Efeito holográfico é capturado correctamente na imagem criada
+
+/* === Controlo por Teclado e Táctil === */
 Tecla               Acção        
-─────────           ────────────────────────────────
-  ← (seta esquerda)	Move peça para a esquerda
-→ (seta direita)	  Move peça para a direita
-↓ (seta abaixo)	    Desce a peça
-↑ (seta acima)	    Roda a peça
-Spacebar	          Queda instantânea até ao fundo
-P	                  Pausa o jogo
+─────────           ───────────────────────────────────────
+← (seta esquerda)   Move a peça para a esquerda  
+→ (seta direita)    Move a peça para a direita  
+↓ (seta abaixo)     Desce a peça lentamente  
+↑ (seta acima)      Roda a peça  
+Espaço              Queda instantânea até ao fundo  
+P                   Pausa o jogo
 
-No modo táctil, os mesmos controlos funcionam por gestos e botões visuais.
+→ No modo táctil:
+   - Controlos equivalentes disponíveis por gestos
+   - Botões visuais adaptados a ecrãs pequenos
+   - Vibração activada onde disponível
