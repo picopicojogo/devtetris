@@ -1,0 +1,57 @@
+/* === Por ordem de prioridade funcional, desde o arranque e núcleo do jogo até à interface, extras e ferramentas de apoio. === */
+Nome do Ficheiro            Função Principal
+──────────────────────────  ───────────────────────────────────────────────────────────────────────────────────────
+loader.js                   Arranque inicial: pré-carregamento de recursos, frases arcade e activação do botão Iniciar
+motor.js                    Núcleo lógico: definição das peças, colisões, rotação, matriz do tabuleiro e progressão
+canvas.js                   Renderização: desenho da peça activa e próxima, e actualização visual de tempo e pontuação
+controlos.js                Entrada do jogador: teclado físico, gestos tácteis, vibração e alternância táctil arcade
+pontuacao.js                Sistema de pontuação: cálculo de linhas, combos, níveis, ranking e mensagens de celebração
+audio.js                    Ambiente sonoro: efeitos, música retro, vibração e modo conforto auditivo
+cerebro.js                  Lógica central: ciclo do jogo, integração dos módulos, desbloqueios e coordenação visual
+index.html                  Estrutura da interface: canvases, botões, modais, ranking, áudio, partilhas e ligações aos scripts
+style.css                   Estilo visual retro: layout arcade, animações, tipografia pixelizada e efeitos interactivos
+responsive.css              Adaptação de interface: escalonamento por dispositivos, modo retrato e estilo táctil
+cartao.js                   Cartão do jogador: criação de perfil pixelado, estilos visuais retro e exportação como imagem
+partilhas.js                Partilha de resultados: redes sociais, link curto, clipboard, imagem, e-mail e integração com perfil
+estatisticas.js             Estatísticas globais: análise dos 10 melhores, cálculos médios, exportações (.txt/.csv) e personalização
+avisosdebug.js              Diagnóstico técnico: validação de elementos DOM, recursos, estilos e suporte a APIs no modo desenvolvimento
+
+/* === Sistema de Pontuação === */
+Cada linha eliminada vale 100 pontos
+Múltiplas linhas numa jogada criam mensagens temáticas:
+  2 linhas → “Dupla eliminada!” ou combo especial
+  4 linhas → “Tetris máximo! És um mestre!”
+  6 linhas → “Ultra explosão!”
+
+Combos consecutivos são acumulados e aumentam o destaque.
+O nível sobe a cada 500 pontos: nível = 1 + Math.floor(pontuação / 500)
+Limite máximo de pontuação: 999.999 pontos
+
+/* === Sistema de Pontuação === */
+O ranking é guardado localmente (localStorage)
+Cada entrada inclui: nome, pontuação, nível, tempo, número de combos, data.
+Medalhas atribuídas consoante os pontos:
+  Ouro → ≥ 3000
+  Prata → ≥ 2000
+  Bronze → ≥ 1000
+  Participação → < 1000
+
+Destaques por estilo de jogo:
+  Estratégia → ≥ 12 combos
+  Rápido → ≥ 6 combos
+  Relâmpago → tempo ≤ 01:00
+  Resistente → restante
+
+/* === Controlo por Teclado === */
+
+Tecla	Acção:
+Tecla               Acção        
+─────────           ────────────────────────────────
+  ← (seta esquerda)	Move peça para a esquerda
+→ (seta direita)	  Move peça para a direita
+↓ (seta abaixo)	    Desce a peça
+↑ (seta acima)	    Roda a peça
+Spacebar	          Queda instantânea até ao fundo
+P	                  Pausa o jogo
+
+No modo táctil, os mesmos controlos funcionam por gestos e botões visuais.
