@@ -72,7 +72,7 @@ export function criarMatriz(largura = COLUNAS, altura = LINHAS) {
 }
 
 /**
- * Gera uma nova peça aleatória com base no nível atual
+ * Cria uma nova peça aleatória com base no nível atual
  */
 export function gerarPeca(nivel = 1) {
   let conjunto = PECAS_CLASSICAS;
@@ -83,7 +83,7 @@ export function gerarPeca(nivel = 1) {
   }
 
   const indice = Math.floor(Math.random() * conjunto.length);
-  return conjunto[indice].map(linha => [...linha]); // cópia profunda
+  return conjunto[indice].map(linha => [...linha]);
 }
 
 /**
