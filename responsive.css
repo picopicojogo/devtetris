@@ -62,6 +62,10 @@
   .popup-content h3 {
     font-size: 0.65em;
   }
+
+  .cartao-jogador {
+    transform: scale(0.85);
+  }
 }
 
 /* === Telemóveis médios e tablets pequenos (481px a 768px) === */
@@ -130,6 +134,10 @@
   .popup-content h3 {
     font-size: 0.7em;
   }
+
+  .cartao-jogador {
+    transform: scale(0.9);
+  }
 }
 
 /* === Tablets médios (769px a 1024px) === */
@@ -156,6 +164,10 @@
   #info {
     font-size: 0.75em;
     gap: 1.5em;
+  }
+
+  .cartao-jogador {
+    transform: scale(0.95);
   }
 }
 
@@ -253,7 +265,7 @@
   }
 }
 
-/* === Monitores 4K e superiores (acima de 3200px) === */
+/* === Monitores 4K+ (acima de 3200px) === */
 @media (min-width: 3201px) {
   #game-container {
     max-width: 1200px;
@@ -278,9 +290,47 @@
     font-size: 1em;
     gap: 2.5em;
   }
+
+  .cartao-jogador {
+    transform: scale(1.05);
+  }
 }
 
-/* === Ajustes para orientação vertical (modo retrato) === */
+/* === Telas dobráveis e verticais estreitas === */
+@media (max-width: 420px) and (min-height: 800px) {
+  canvas#board {
+    max-height: 45vh;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 1.3em;
+    margin-bottom: 0.5em;
+  }
+
+  button {
+    font-size: 0.55em;
+    min-width: 80px;
+    padding: 0.4em 0.6em;
+  }
+
+  #info {
+    font-size: 0.55em;
+    gap: 0.6em;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #preview-container {
+    margin-top: 1em;
+  }
+
+  .cartao-jogador {
+    transform: scale(0.75);
+  }
+}
+
+/* === Ajustes para orientação vertical === */
 @media (orientation: portrait) {
   #preview-container {
     margin-top: 1.2em;
@@ -318,5 +368,17 @@
   #celebracao {
     top: 4vh;
     font-size: 0.8em;
+  }
+
+  #mensagemConforto {
+    font-size: 0.6em;
+    bottom: 2vh;
+    padding: 0.5em 1em;
+    text-align: center;
+  }
+
+  .cartao-jogador {
+    margin-top: 1em;
+    transform: scale(0.9);
   }
 }
