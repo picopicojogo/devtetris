@@ -13,16 +13,22 @@ export const LINHAS  = alturaEcrã  <= 700 ? 18 : 20;
  * Paleta de cores neon associada a cada tipo de peça
  */
 export const CORES = {
-  1: "#00ffff", // I — Azul claro
-  2: "#ff00ff", // T — Rosa neon
-  3: "#ffff00", // O — Amarelo
-  4: "#00ff00", // S — Verde
-  5: "#ff0000", // Z — Vermelho
-  6: "#0000ff", // J — Azul escuro
-  7: "#ffa500", // L — Laranja
-  8: "#ff66cc", // U — Rosa claro
-  9: "#00ff99", // Plus — Verde água
-  10: "#ff4444" // X — Vermelho ardente
+  1:  "#00ffff", // I — Azul claro
+  2:  "#ff00ff", // T — Rosa neon
+  3:  "#ffff00", // O — Amarelo
+  4:  "#00ff00", // S — Verde
+  5:  "#ff0000", // Z — Vermelho
+  6:  "#0000ff", // J — Azul escuro
+  7:  "#ffa500", // L — Laranja
+  8:  "#ff66cc", // U — Rosa claro
+  9:  "#00ff99", // Plus — Verde água
+  10: "#ff4444", // X — Vermelho ardente
+
+  // 💎 Blocos lendários (nível 20+)
+  11: "#99ffff", // Cruz simétrica
+  12: "#cc66ff", // Torre com base
+  13: "#ffcc00", // Espiral brilhante
+  14: "#66ffcc"  // Retângulo com braço
 };
 
 /**
@@ -44,18 +50,18 @@ const PECAS_CLASSICAS = [
 const PECAS_AVANCADAS = [
   [[8, 0, 8], [8, 8, 8]],            // U
   [[0, 9], [9, 9], [0, 9]],          // Plus com canto
-  [[9, 9, 0], [0, 9, 9]],            // Z invertido com alargamento
+  [[9, 9, 0], [0, 9, 9]],            // Z invertido alargado
   [[0, 0, 10], [10, 10, 10], [0, 10, 0]] // X com prolongamento
 ];
 
 /**
- * Peças lendárias (nível 20+)
+ * Peças lendárias (nível 20+), com valores exclusivos
  */
 const PECAS_LEGENDARIAS = [
-  [[1, 0, 1], [0, 1, 0], [1, 0, 1]], // Cruz simétrica
-  [[2, 2, 2], [0, 2, 0], [0, 2, 0]], // Torre com base
-  [[3, 3, 0], [0, 3, 0], [0, 3, 3]], // Espiral
-  [[4, 4], [0, 4], [0, 4], [4, 4]]   // Retângulo com braço
+  [[11, 0, 11], [0, 11, 0], [11, 0, 11]],           // Cruz simétrica
+  [[12, 12, 12], [0, 12, 0], [0, 12, 0]],           // Torre com base
+  [[13, 13, 0], [0, 13, 0], [0, 13, 13]],           // Espiral brilhante
+  [[14, 14], [0, 14], [0, 14], [14, 14]]            // Retângulo com braço
 ];
 
 /**
@@ -77,7 +83,7 @@ export function gerarPeca(nivel = 1) {
   }
 
   const indice = Math.floor(Math.random() * conjunto.length);
-  return conjunto[indice].map(linha => [...linha]);
+  return conjunto[indice].map(linha => [...linha]); // cópia profunda
 }
 
 /**
@@ -141,7 +147,7 @@ export function limparLinhas(tabuleiro) {
       tabuleiro.splice(y, 1);
       tabuleiro.unshift(new Array(COLUNAS).fill(0));
       removidas++;
-      y++; // Reavaliar linha reposicionada
+      y++; // Reavaliar a linha reposicionada
     }
   }
 
