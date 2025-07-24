@@ -1,4 +1,5 @@
 import { COLUNAS, LINHAS, CORES } from "./motor.js";
+import { nivel } from "./pontuacao.js";
 
 /**
  * Inicializa os canvas principais com dimensões escaláveis e estilo pixelizado
@@ -28,6 +29,25 @@ export function configurarCanvas() {
 }
 
 /**
+ * Retorna estilo visual do bloco consoante o nível do jogador
+ */
+function obterEstiloBloco(nivel, valor) {
+  const baseCor = obterCor(valor);
+  let brilho = "#ffffff";
+  let sombra = "#222222";
+
+  if (nivel >= 10 && nivel < 20) {
+    brilho = "#aaffff";   // Azul claro para peças avançadas
+    sombra = "#1a1a1a";
+  } else if (nivel >= 20) {
+    brilho = "#ff99ff";   // Holográfico para peças lendárias
+    sombra = "#330033";
+  }
+
+  return { baseCor, brilho, sombra };
+}
+
+/**
  * Desenha o estado actual do tabuleiro, incluindo blocos fixos e peça activa
  */
 export function desenharJogo(ctx, largura, altura, tabuleiro, peca, posicao) {
@@ -39,7 +59,9 @@ export function desenharJogo(ctx, largura, altura, tabuleiro, peca, posicao) {
   for (let y = 0; y < LINHAS; y++) {
     for (let x = 0; x < COLUNAS; x++) {
       const valor = tabuleiro[y][x];
-      if (valor) desenharBloco(ctx, x * larguraBloco, y * alturaBloco, larguraBloco, alturaBloco, valor);
+      if (valor) {
+        desenharBloco(ctx, x * larguraBloco, y * alturaBloco, larguraBloco, alturaBloco, valor, nivel);
+      }
     }
   }
 
@@ -51,7 +73,7 @@ export function desenharJogo(ctx, largura, altura, tabuleiro, peca, posicao) {
         const px = posicao.x + x;
         const py = posicao.y + y;
         if (py >= 0 && py < LINHAS) {
-          desenharBloco(ctx, px * larguraBloco, py * alturaBloco, larguraBloco, alturaBloco, valor);
+          desenharBloco(ctx, px * larguraBloco, py * alturaBloco, larguraBloco, alturaBloco, valor, nivel);
         }
       }
     }
@@ -59,7 +81,7 @@ export function desenharJogo(ctx, largura, altura, tabuleiro, peca, posicao) {
 }
 
 /**
- * Desenha a próxima peça no canvas lateral com alinhamento central
+ * Desenha a próxima peça no canvas lateral com alinhamento central e efeito visual
  */
 export function desenharProxima(ctx, peca) {
   const largura = ctx.canvas.width;
@@ -77,32 +99,39 @@ export function desenharProxima(ctx, peca) {
       if (valor) {
         const posX = offsetX + x * larguraBloco;
         const posY = offsetY + y * alturaBloco;
-        desenharBloco(ctx, posX, posY, larguraBloco, alturaBloco, valor);
+        desenharBloco(ctx, posX, posY, larguraBloco, alturaBloco, valor, nivel);
       }
     }
   }
 }
 
 /**
- * Desenha um bloco com sombra e contorno visuais
+ * Desenha um bloco com efeito 3D por nível do jogador
  */
-function desenharBloco(ctx, x, y, largura, altura, valor) {
-  const cor = obterCor(valor);
-  ctx.shadowColor   = "rgba(0,0,0,0.3)";
-  ctx.shadowBlur    = 2;
-  ctx.shadowOffsetX = 1;
-  ctx.shadowOffsetY = 1;
+function desenharBloco(ctx, x, y, largura, altura, valor, nivel) {
+  const { baseCor, brilho, sombra } = obterEstiloBloco(nivel, valor);
 
-  ctx.fillStyle = cor;
+  const gradiente = ctx.createLinearGradient(x, y, x + largura, y + altura);
+  gradiente.addColorStop(0.0, brilho);
+  gradiente.addColorStop(0.5, baseCor);
+  gradiente.addColorStop(1.0, sombra);
+
+  ctx.shadowColor   = "rgba(0,0,0,0.4)";
+  ctx.shadowBlur    = 5;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 2;
+
+  ctx.fillStyle = gradiente;
   ctx.fillRect(x, y, largura, altura);
 
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = "#333";
+  ctx.strokeStyle = "rgba(255,255,255,0.15)";
+  ctx.lineWidth = 1;
   ctx.strokeRect(x, y, largura, altura);
 }
 
 /**
- * Obtém a cor associada ao valor da peça
+ * Obtém a cor base associada ao valor da peça
  */
 function obterCor(valor) {
   return CORES[valor] || "#aaaaaa";
