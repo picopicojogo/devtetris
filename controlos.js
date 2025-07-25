@@ -103,6 +103,8 @@ export function configurarControlos(moverFn, rodarFn, descerFn, quedaFn, pausarF
   let startX = 0, startY = 0, ultimoToque = 0;
   let toqueLongoTimer = null;
   let quedaRapidaLoop = null;
+  let movimentoLateralLoop = null;
+  let direcaoAtual = null;
 
   canvas?.addEventListener("touchstart", e => {
     if (e.touches.length > 1) return;
@@ -134,18 +136,34 @@ export function configurarControlos(moverFn, rodarFn, descerFn, quedaFn, pausarF
     const dx = toque.clientX - startX;
     const dy = toque.clientY - startY;
 
-    if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
+    if (Math.abs(dx) > 20 || Math.abs(dy) > 20) {
       clearInterval(quedaRapidaLoop);
       quedaRapidaLoop = null;
       overlay?.classList.remove("activo");
     }
-  }, { passive: true });
+
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) {
+      const novaDirecao = dx > 0 ? 1 : -1;
+
+      if (novaDirecao !== direcaoAtual) {
+        direcaoAtual = novaDirecao;
+        moverFn(novaDirecao);
+        vibrar(10);
+
+        clearInterval(movimentoLateralLoop);
+        movimentoLateralLoop = setInterval(() => moverFn(novaDirecao), 90);
+      }
+    }
+  }, { passive: false });
 
   canvas?.addEventListener("touchend", e => {
     clearTimeout(toqueLongoTimer);
     clearInterval(quedaRapidaLoop);
+    clearInterval(movimentoLateralLoop);
     toqueLongoTimer = null;
     quedaRapidaLoop = null;
+    movimentoLateralLoop = null;
+    direcaoAtual = null;
     overlay?.classList.remove("activo");
 
     if (e.changedTouches.length > 1) return;
@@ -157,7 +175,7 @@ export function configurarControlos(moverFn, rodarFn, descerFn, quedaFn, pausarF
     const absX = Math.abs(dx);
     const absY = Math.abs(dy);
     const angulo = Math.atan2(dy, dx) * 180 / Math.PI;
-    const limiar = 12;
+    const limiar = 10;
 
     if (Math.max(absX, absY) < limiar && Date.now() - ultimoToque > 300) {
       rodarFn(1);
@@ -165,7 +183,7 @@ export function configurarControlos(moverFn, rodarFn, descerFn, quedaFn, pausarF
       return;
     }
 
-    if (absX > 30 && (Math.abs(angulo) < 45 || Math.abs(angulo) > 135)) {
+    if (absX > 24 && (Math.abs(angulo) < 45 || Math.abs(angulo) > 135)) {
       dx > 0 ? moverFn(1) : moverFn(-1);
       return;
     }
