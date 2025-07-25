@@ -1,55 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pico-Pico Bricks</title>
-  <meta name="description" content="Jogo estilo Tetris do Pico-Pico" />
-  <meta name="theme-color" content="#111" />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="responsive.css" />
+  <meta name="description" content="Jogo estilo Tetris do Pico-Pico">
+  <meta name="theme-color" content="#111">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
 </head>
 <body lang="pt">
   <div id="wrapper">
     <div id="game-container">
       <h1>Pico-Pico Bricks</h1>
-
       <div id="info">
         <div>Pontos: <span id="score">0</span></div>
         <div>Nível: <span id="level">1</span></div>
         <div>Tempo: <span id="time">00:00</span></div>
       </div>
-
       <div id="preview-container">
         <h2 class="preview-title">Próxima Peça</h2>
         <canvas id="next"></canvas>
       </div>
-
       <div style="position: relative;">
         <canvas id="board"></canvas>
         <!-- Overlay para descida rápida -->
         <div id="overlayQuedaRapida"></div>
       </div>
-
       <div id="botoes-principais">
         <button id="startBtn">▶ Iniciar</button>
         <button id="pauseBtn">⏸️ Pausa</button>
         <button id="resetBtn">🔄 Reiniciar</button>
       </div>
-
       <div id="botoes-menus">
         <button onclick="document.getElementById('popupAudio').classList.add('show')">🔊 Audio & Efeitos</button>
         <button onclick="document.getElementById('popupPontuacoes').classList.add('show')">🏆 Pontuações</button>
         <button onclick="document.getElementById('popupPartilhar').classList.add('show')">📤 Partilhar</button>
       </div>
-
       <div id="botao-unico">
         <button id="resetPreferenciasBtn">🧹 Limpar Tudo</button>
       </div>
     </div>
   </div>
-
   <!-- Popup: Audio & Efeitos -->
   <div id="popupAudio" class="popup-menu">
     <div class="popup-content">
@@ -60,7 +53,6 @@
       <button onclick="document.getElementById('popupAudio').classList.remove('show')">❌ Fechar</button>
     </div>
   </div>
-
   <!-- Popup: Pontuações -->
   <div id="popupPontuacoes" class="popup-menu">
     <div class="popup-content">
@@ -72,7 +64,6 @@
       <button onclick="document.getElementById('popupPontuacoes').classList.remove('show')">❌ Fechar</button>
     </div>
   </div>
-
   <!-- Popup: Partilhar -->
   <div id="popupPartilhar" class="popup-menu">
     <div class="popup-content">
@@ -88,11 +79,9 @@
       <button onclick="document.getElementById('popupPartilhar').classList.remove('show')">❌ Fechar</button>
     </div>
   </div>
-
   <!-- Celebração e conforto -->
   <div id="celebracao"></div>
   <div id="mensagemConforto" style="display: none;"></div>
-
   <!-- Modal: Fim de Jogo -->
   <div id="modal" class="modal">
     <div class="modal-content">
@@ -104,7 +93,6 @@
       <button id="cancelSave" onclick="document.getElementById('modal').classList.remove('show')">❌ Cancelar</button>
     </div>
   </div>
-
   <!-- Modal: Top 10 -->
   <div id="top10Modal" class="modal">
     <div class="modal-content">
@@ -113,7 +101,6 @@
       <button id="fecharTop10">❌ Fechar</button>
     </div>
   </div>
-
   <!-- Modal: Estatísticas -->
   <div id="estatisticasModal" class="modal">
     <div class="modal-content">
@@ -122,7 +109,6 @@
       <button id="fecharEstatisticas">❌ Fechar</button>
     </div>
   </div>
-
   <!-- Modal: Cartão do Jogador -->
   <div id="cartaoModal" class="modal">
     <div class="modal-content" id="conteudoCartaoJogador">
@@ -132,16 +118,13 @@
       <button onclick="document.getElementById('cartaoModal').classList.remove('show')">❌ Fechar</button>
     </div>
   </div>
-
   <!-- Sons do jogo -->
   <audio id="musica-fundo" src="musica-fundo.mp3" loop preload="auto"></audio>
   <audio id="rodar" src="rodar.mp3" preload="auto"></audio>
   <audio id="colidir" src="colidir.mp3" preload="auto"></audio>
   <audio id="perdeu" src="perdeu.mp3" preload="auto"></audio>
-
   <!-- Biblioteca externa para exportar cartão -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
   <!-- Módulos principais -->
   <script type="module" src="./motor.js"></script>
   <script type="module" src="./canvas.js"></script>
