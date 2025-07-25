@@ -60,6 +60,7 @@ responsive.css              Adaptação de interface: escalonamento automático,
 → Efeito holográfico é capturado correctamente na imagem criada
 
 /* === Controlo por Teclado e Táctil === */
+
 Tecla               Acção        
 ─────────           ───────────────────────────────────────
 ← (seta esquerda)   Move a peça para a esquerda  
@@ -70,6 +71,9 @@ Espaço              Queda instantânea até ao fundo
 P                   Pausa o jogo
 
 → No modo táctil:
-   - Controlos equivalentes disponíveis por gestos
-   - Botões visuais adaptados a ecrãs pequenos
-   - Vibração activada onde disponível
+   - Rotação: toque duplo rápido (intervalo < 300ms) ou toque curto sem movimento
+   - Movimento lateral: deslize horizontal (>12px), com repetição automática a cada 90ms enquanto o dedo se move
+   - Descida rápida: toque longo (>500ms), aceleração vertical contínua a cada 80ms
+   - Descida ou queda única: deslize vertical (dy > 60px para queda total; caso contrário, descida de 1 linha)
+   - Botões visuais adaptados a ecrãs pequenos com repetição a cada 150ms
+   - Vibração activada onde disponível, com padrões distintos por tipo de acção
