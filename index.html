@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-PT">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pico-Pico Bricks</title>
-  <meta name="description" content="Jogo estilo Tetris do Pico-Pico">
-  <meta name="theme-color" content="#111">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="responsive.css">
+  <meta name="description" content="Jogo estilo Tetris do Pico-Pico" />
+  <meta name="theme-color" content="#111" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
 </head>
-<body lang="pt">
+<body>
   <div id="wrapper">
     <div id="game-container">
       <h1>Pico-Pico Bricks</h1>
@@ -29,6 +29,15 @@
         <canvas id="board"></canvas>
         <div id="overlayQuedaRapida"></div>
       </div>
+      <!-- Botões táteis posicionados acima dos principais -->
+      <div id="controles-tatil">
+        <button id="leftBtn">⬅️</button>
+        <button id="rightBtn">➡️</button>
+        <button id="downBtn">⬇️</button>
+        <button id="rotateBtn">🔄</button>
+        <button id="dropBtn">⚡</button>
+        <button id="alternarModoTatil">🖐️ Alternar Modo Táctil</button>
+      </div>
       <div id="botoes-principais">
         <button id="startBtn">▶ Iniciar</button>
         <button id="pauseBtn">⏸️ Pausa</button>
@@ -44,7 +53,7 @@
       </div>
     </div>
   </div>
-  <!-- Popup: Audio & Efeitos -->
+  <!-- Popups: Audio, Pontuações, Partilhar -->
   <div id="popupAudio" class="popup-menu">
     <div class="popup-content">
       <h3>🔊 Audio & Efeitos</h3>
@@ -54,7 +63,6 @@
       <button onclick="document.getElementById('popupAudio').classList.remove('show')">❌ Fechar</button>
     </div>
   </div>
-  <!-- Popup: Pontuações -->
   <div id="popupPontuacoes" class="popup-menu">
     <div class="popup-content">
       <h3>🏆 Pontuações</h3>
@@ -65,7 +73,6 @@
       <button onclick="document.getElementById('popupPontuacoes').classList.remove('show')">❌ Fechar</button>
     </div>
   </div>
-  <!-- Popup: Partilhar -->
   <div id="popupPartilhar" class="popup-menu">
     <div class="popup-content">
       <h3>📤 Menu Partilhar</h3>
@@ -80,6 +87,7 @@
       <button onclick="document.getElementById('popupPartilhar').classList.remove('show')">❌ Fechar</button>
     </div>
   </div>
+  <!-- Elementos extra -->
   <div id="celebracao"></div>
   <div id="mensagemConforto" style="display: none;"></div>
   <!-- Modal: Fim de Jogo -->
