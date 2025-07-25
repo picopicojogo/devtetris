@@ -1,5 +1,5 @@
 /**
- * ⚡ Partilha compatível com botão legacy id="partilharResultado"
+ * Partilha compatível com botão legacy id="partilharResultado"
  */
 export function partilharResultadoFinal() {
   const pontos = document.getElementById("score")?.textContent || "0";
@@ -14,7 +14,7 @@ export function partilharResultadoFinal() {
 }
 
 /**
- * ⚡ Partilha legacy para redes sociais por id fixo
+ * Partilha legacy para redes sociais por id fixo
  */
 export function configurarPartilhasPerfil() {
   const url = window.location.href;
@@ -39,7 +39,7 @@ export function configurarPartilhasPerfil() {
 }
 
 /**
- * 💡 Partilha moderna usando data-partilhar="perfil"
+ * Partilha moderna usando data-partilhar="perfil"
  */
 export function configurarPartilhasPerfilFlexivel() {
   document.querySelectorAll('[data-partilhar="perfil"]').forEach(botao => {
@@ -69,7 +69,7 @@ export function configurarPartilhasPerfilFlexivel() {
 }
 
 /**
- * 📋 Copia o perfil como texto para a área de transferência
+ * Copia o perfil como texto para a área de transferência
  */
 export function configurarPartilhaClipboard() {
   document.querySelectorAll('[data-partilhar="copiar"]').forEach(botao => {
@@ -88,14 +88,14 @@ export function configurarPartilhaClipboard() {
 }
 
 /**
- * 🔗 Gera link curto via is.gd ou copia o URL em caso de falha (CORS)
+ * Cria um link curto via TinyURL ou copia o URL em caso de falha (CORS)
  */
 export function configurarPartilhaLinkCurto() {
   document.querySelectorAll('[data-partilhar="link"]').forEach(botao => {
     botao.addEventListener("click", () => {
       const url = window.location.href;
 
-      fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`)
+      fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`)
         .then(res => {
           if (!res.ok) throw new Error("Resposta inválida");
           return res.text();
@@ -107,7 +107,7 @@ export function configurarPartilhaLinkCurto() {
         })
         .catch(() => {
           navigator.clipboard.writeText(url)
-            .then(() => alert("📡 Falha intergaláctica ao encurtar! Link original copiado."))
+            .then(() => alert("📡 Não foi possível encurtar. Link original copiado."))
             .catch(() => alert("Erro ao copiar. Usa Ctrl+C manualmente."));
         });
     });
@@ -115,7 +115,7 @@ export function configurarPartilhaLinkCurto() {
 }
 
 /**
- * ✉️ Envia o perfil por email
+ * Envia o perfil por email
  */
 export function configurarPartilhaEmailPerfil() {
   document.querySelectorAll('[data-partilhar="email"]').forEach(botao => {
@@ -134,7 +134,7 @@ export function configurarPartilhaEmailPerfil() {
 }
 
 /**
- * 🖼️ Copia o cartão como imagem (via html2canvas)
+ * Copia o cartão como imagem (via html2canvas)
  */
 export function configurarPartilhaImagemCartao() {
   document.querySelectorAll('[data-partilhar="imagem"]').forEach(botao => {
@@ -159,7 +159,7 @@ export function configurarPartilhaImagemCartao() {
 }
 
 /**
- * 🎨 Injeta estilos visuais retro no popup de partilha
+ * Injecta estilos visuais retro no popup de partilha
  */
 export function injectarEstilosPartilhas() {
   if (document.getElementById("estilos-partilhas")) return;
@@ -196,13 +196,12 @@ export function injectarEstilosPartilhas() {
       color: #111;
       box-shadow: 0 0 8px rgba(0,255,255,0.5);
     }
-        #popupPartilhar h3 {
+    #popupPartilhar h3 {
       font-size: 0.9em;
       margin-bottom: 1em;
       color: #ffff66;
       text-shadow: 1px 1px #000;
     }
-
     @media (max-width: 420px) {
       #popupPartilhar .popup-content {
         width: 95%;
