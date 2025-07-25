@@ -1,12 +1,11 @@
 import { verificarColisao, rodar } from "./motor.js";
 import { tocarSomRodar } from "./audio.js";
 
-// Estado actual do modo táctil arcade (activo ou não)
+// Estado actual do modo táctil arcade
 let modoArcadeTatil = true;
 
 /**
- * Vibra o dispositivo, se o modo estiver activo e o navegador suportar vibração
- * @param {number|Array<number>} padrao - duração ou sequência de vibração
+ * Vibração do dispositivo, se suportado e modo activo
  */
 function vibrar(padrao) {
   if (!modoArcadeTatil || !navigator.vibrate) return;
@@ -14,8 +13,7 @@ function vibrar(padrao) {
 }
 
 /**
- * Tenta mover a peça lateralmente na direcção indicada
- * @param {number} direcao -1 para esquerda, +1 para direita
+ * Movimento lateral da peça
  */
 export function moverPeca(direcao, tabuleiro, peca, posicao) {
   posicao.x += direcao;
@@ -27,8 +25,7 @@ export function moverPeca(direcao, tabuleiro, peca, posicao) {
 }
 
 /**
- * Tenta rodar a peça na direcção desejada
- * Produz som e vibração apenas se a rotação for válida
+ * Rotação da peça
  */
 export function rodarPeca(direcao, peca, tabuleiro, posicao) {
   const rodada = rodar(peca, direcao);
@@ -39,8 +36,7 @@ export function rodarPeca(direcao, peca, tabuleiro, posicao) {
 }
 
 /**
- * Tenta descer a peça uma linha
- * Se travar, retorna verdadeiro
+ * Queda da peça (1 linha)
  */
 export function descerPeca(tabuleiro, peca, posicao) {
   posicao.y++;
@@ -53,14 +49,10 @@ export function descerPeca(tabuleiro, peca, posicao) {
 }
 
 /**
- * Configura todos os tipos de controlo do jogo:
- * - Teclado físico
- * - Botões visuais com repetição
- * - Gestos tácteis no canvas principal
- * - Alternador para activar/desactivar modo táctil arcade
+ * Configura teclado, táctil, repetição de botões e alternador
  */
 export function configurarControlos(moverFn, rodarFn, descerFn, quedaFn, pausarFn) {
-  // Controlo via teclado físico
+  // === Teclado físico ===
   window.addEventListener("keydown", e => {
     const tecla = e.code.toLowerCase();
     if (["arrowleft", "arrowright", "arrowup", "arrowdown", "space"].includes(tecla)) {
@@ -78,15 +70,16 @@ export function configurarControlos(moverFn, rodarFn, descerFn, quedaFn, pausarF
     }
   });
 
-  // Botões visuais com repetição ao manter pressionado
+  // === Repetição contínua para botões visuais ===
   const repetirAoManter = (el, acao) => {
     let intervalo = null;
     const iniciar = () => {
       acao();
-      intervalo = setInterval(acao, 150);
+      if (!intervalo) intervalo = setInterval(acao, 150);
     };
     const parar = () => {
       clearInterval(intervalo);
+      intervalo = null;
     };
 
     el?.addEventListener("mousedown", iniciar);
@@ -103,42 +96,47 @@ export function configurarControlos(moverFn, rodarFn, descerFn, quedaFn, pausarF
   document.getElementById("rotateBtn")?.addEventListener("click", () => rodarFn(1));
   document.getElementById("dropBtn")?.addEventListener("click", () => quedaFn());
 
-  // Gestos tácteis no canvas principal
+  // === Gestos táctil no canvas ===
   const canvas = document.getElementById("board");
   const overlay = document.getElementById("overlayQuedaRapida");
 
   let startX = 0, startY = 0, ultimoToque = 0;
-  let toqueLongoTimer = null, quedaRapidaLoop = null;
+  let toqueLongoTimer = null;
+  let quedaRapidaLoop = null;
 
   canvas?.addEventListener("touchstart", e => {
     if (e.touches.length > 1) return;
+    e.preventDefault();
 
     const toque = e.touches[0];
     startX = toque.clientX;
     startY = toque.clientY;
 
     const agora = Date.now();
-    if (agora - ultimoToque < 300) rodarFn(1); // duplo toque para rodar
+    if (agora - ultimoToque < 300) rodarFn(1);
     ultimoToque = agora;
 
-    // Inicia queda rápida após 500ms de toque contínuo
-    toqueLongoTimer = setTimeout(() => {
-      quedaRapidaLoop = setInterval(() => {
-        quedaFn();
-        vibrar([20, 30, 20]);
-        overlay?.classList.add("activo");
-      }, 80);
-    }, 500);
-  }, { passive: true });
+    if (!toqueLongoTimer) {
+      toqueLongoTimer = setTimeout(() => {
+        if (!quedaRapidaLoop) {
+          quedaRapidaLoop = setInterval(() => {
+            quedaFn();
+            vibrar([20, 30, 20]);
+            overlay?.classList.add("activo");
+          }, 80);
+        }
+      }, 500);
+    }
+  }, { passive: false });
 
   canvas?.addEventListener("touchmove", e => {
     const toque = e.touches[0];
     const dx = toque.clientX - startX;
     const dy = toque.clientY - startY;
 
-    // Cancela a queda rápida ao detectar movimento
     if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
       clearInterval(quedaRapidaLoop);
+      quedaRapidaLoop = null;
       overlay?.classList.remove("activo");
     }
   }, { passive: true });
@@ -161,20 +159,17 @@ export function configurarControlos(moverFn, rodarFn, descerFn, quedaFn, pausarF
     const angulo = Math.atan2(dy, dx) * 180 / Math.PI;
     const limiar = 12;
 
-    // Toque curto → rodar
     if (Math.max(absX, absY) < limiar && Date.now() - ultimoToque > 300) {
       rodarFn(1);
       ultimoToque = Date.now();
       return;
     }
 
-    // Deslize lateral com tolerância angular alargada
     if (absX > 30 && (Math.abs(angulo) < 45 || Math.abs(angulo) > 135)) {
       dx > 0 ? moverFn(1) : moverFn(-1);
       return;
     }
 
-    // Deslize vertical → queda ou descida
     if (absY > absX && dy > 60) {
       quedaFn();
     } else if (absY > absX) {
@@ -182,7 +177,7 @@ export function configurarControlos(moverFn, rodarFn, descerFn, quedaFn, pausarF
     }
   }, { passive: true });
 
-  // Alternador do modo táctil arcade
+  // === Alternador modo táctil arcade ===
   const btnTatil = document.getElementById("alternarModoTatil");
   if (btnTatil) {
     const actualizarVisual = () => {
