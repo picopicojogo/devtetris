@@ -115,7 +115,17 @@ export function configurarControlos(moverFn, rodarFn, descerFn, quedaFn, pausarF
     startY = toque.clientY;
 
     const agora = Date.now();
-    if (agora - ultimoToque < 300) rodarFn(1);
+    const intervalo = agora - ultimoToque;
+
+    if (intervalo < 300 && !toqueLongoTimer) {
+      rodarFn(1);
+      requestAnimationFrame(() => {
+        document.getElementById("board")?.classList.add("efeito-rotacao");
+        setTimeout(() => {
+          document.getElementById("board")?.classList.remove("efeito-rotacao");
+        }, 120);
+      });
+    }
     ultimoToque = agora;
 
     if (!toqueLongoTimer) {
